@@ -1,0 +1,428 @@
+nb unterscheidet zwischen Todos und Tasks: Ein Todo ist ein eigener Eintrag/eine eigene Markdown-Datei. Ein Task ist eine Checkbox - [ ] innerhalb einer Note oder eines Todos. Sed Paris
+1. Ein Todo anlegen
+Ganz simpel:
+nb todo add "Website fertig machen"
+
+Mit Beschreibung:
+nb todo add "Website fertig machen" \
+  --description "Startseite prüfen, Impressum ergänzen und hochladen"
+
+Mit Fälligkeitsdatum:
+nb todo add "Website fertig machen" \
+  --due "2026-10-12"
+
+Und mit Tags:
+nb todo add "Website fertig machen" \
+  --due "2026-10-12" \
+  --tags website,wichtig
+
+Alles zusammen:
+nb todo add "Website fertig machen" \
+  --description "Impressum, Kontaktseite und Deployment prüfen" \
+  --due "2026-10-12" \
+  --tags website,arbeit
+
+Das ist vermutlich die Form, die du am häufigsten brauchst. StarRank
+2. Todos anzeigen
+Alle:
+nb todos
+
+Nur offene:
+nb todos open
+
+Nur erledigte:
+nb todos closed
+
+Das ist praktisch:
+[1] [ ] Website fertig machen
+[2] [ ] ESP32 Platine testen
+[3] [x] Rechnung bezahlen
+
+Die Zahl vorne ist die ID, über die du den Eintrag später ansprechen kannst. StarRank
+3. Todo erledigen
+Zum Beispiel Todo 2:
+nb do 2
+
+Dann wird daraus sinngemäß:
+# [x] ESP32 Platine testen
+
+Wieder öffnen:
+nb undo 2
+
+Also:
+nb do 2
+nb undo 2
+
+4. Todo ansehen
+Wenn du später Beschreibung, Datum usw. sehen willst:
+nb show 2
+
+oder häufig einfach:
+nb 2
+
+Zum Bearbeiten:
+nb edit 2
+
+Dann öffnet sich der Eintrag in deinem konfigurierten Editor, z. B. Vim/Nano/VS Code.
+5. Todo löschen
+Für einen Todo-Eintrag:
+nb todo delete 2
+
+Je nach Kontext funktioniert außerdem das normale:
+nb delete 2
+
+Ich würde bei Todos lieber explizit schreiben:
+nb todo delete 2
+
+Dann weißt du auch einen Monat später noch sofort, was der Befehl macht. StarRank
+6. Tasks – die Checkbox-Unterpunkte
+Jetzt wird nb interessant.
+Ein Todo kann z. B. so aussehen:
+# [ ] Website fertig machen
+
+## Description
+
+Website endlich veröffentlichen.
+
+- [ ] Impressum schreiben
+- [ ] Kontaktformular testen
+- [ ] Bilder optimieren
+- [ ] Auf Server hochladen
+
+Diese:
+- [ ] Impressum schreiben
+
+sind Tasks.
+Erledigt sieht ein Task so aus:
+- [x] Impressum schreiben
+
+7. Tasks anzeigen
+Alle Tasks:
+nb tasks
+
+Kurzform:
+nb t
+
+Zum Beispiel:
+[4] ✔️ [ ] Website fertig machen
+--------------------------------
+[4 1] [ ] Impressum schreiben
+[4 2] [ ] Kontaktformular testen
+[4 3] [x] Bilder optimieren
+[4 4] [ ] Auf Server hochladen
+
+Das ist wichtig:
+[4]
+
+ist dein Todo.
+Und:
+[4 2]
+
+bedeutet:
+Todo 4
+Task 2
+``` :chatgpt-content-reference{index="4"}
+
+
+---
+
+# 8. Einzelnen Task abhaken
+
+Beispiel:
+
+```bash
+nb do 4 2
+
+Damit wird Task 2 in Todo 4 erledigt.
+Also:
+- [ ] Kontaktformular testen
+
+wird:
+- [x] Kontaktformular testen
+
+Wieder öffnen:
+nb undo 4 2
+
+Das entspricht ziemlich genau dem, was du gestern bei Taskwarrior mit Unterpunkten gesucht hast.
+9. Todo direkt mit Untertasks erstellen
+nb todo add unterstützt auch Tasks direkt beim Erstellen:
+nb todo add "Website fertig machen" \
+  --task "Impressum schreiben" \
+  --task "Kontaktformular testen" \
+  --task "Bilder optimieren" \
+  --task "Deployment"
+
+Daraus wird ungefähr:
+# [ ] Website fertig machen
+
+- [ ] Impressum schreiben
+- [ ] Kontaktformular testen
+- [ ] Bilder optimieren
+- [ ] Deployment
+
+Das finde ich für dich ziemlich praktisch. StarRank
+10. Tags / Filtern
+Du kannst Todos taggen:
+nb todo add "DMX Controller umbauen" \
+  --tags esp32,dmx
+
+oder:
+nb todo add "Website veröffentlichen" \
+  --tags web,server
+
+Dann kannst du nach Tags filtern:
+nb todos --tags web
+
+oder:
+nb todos --tags esp32
+
+Auch Kombinationen sind möglich, beispielsweise:
+nb todos --tags esp32,dmx
+``` :chatgpt-content-reference{index="6"}
+
+
+---
+
+# 11. Meine Empfehlung für deine Tags
+
+Ich würde **nicht** 50 Tags erfinden.
+
+Eher sowas:
+
+```text
+#esp32
+#avr
+#cnc
+#website
+#server
+#lernen
+#privat
+#einkauf
+
+Dann beispielsweise:
+nb todo add "MAX485 Platine testen" --tags esp32,dmx
+
+und:
+nb todo add "Qt Pointer Tutorial machen" --tags lernen,cpp
+
+12. Notebooks als Kategorien
+nb kann mehrere Notebooks verwalten.
+Anzeigen:
+nb notebooks
+
+Neues Notebook:
+nb notebooks add projekte
+
+Zum Beispiel könntest du machen:
+home
+projekte
+lernen
+arbeit
+
+Dann kannst du gezielt dort etwas anlegen:
+nb todo add projekte: "ESP32 Handgerät fertigstellen"
+
+oder je nach Syntax/Version:
+nb todo add projekte:"ESP32 Handgerät fertigstellen"
+
+Das Grundprinzip ist:
+notebook:
+
+Zum Beispiel:
+nb todos projekte:
+
+zeigt Todos aus projekte. nb unterstützt Notebook-, Ordner- und Item-Selektoren sehr konsequent. StarRank
+13. Ordner
+Innerhalb eines Notebooks kannst du zusätzlich Ordner benutzen.
+Beispielsweise:
+projekte:
+├── esp32/
+├── cnc/
+└── web/
+
+Dann könnte ein Todo beispielsweise hier landen:
+projekte:esp32/
+
+und du kannst selektiv darin arbeiten.
+Für den Anfang würde ich aber Notebooks + Tags benutzen und Ordner erst später hinzufügen.
+14. Suchen
+nb hat eine Volltextsuche:
+nb search website
+
+Kurzform je nach Installation:
+nb q website
+
+Damit kannst du nicht nur Titel, sondern Inhalte durchsuchen.
+Zum Beispiel:
+nb search MAX485
+
+oder:
+nb search "I2C"
+
+15. Filtern nach offen / erledigt
+Für Todos:
+nb todos open
+
+nb todos closed
+
+Bei Tasks ebenfalls:
+nb tasks open
+
+nb tasks closed
+
+Das ist für den normalen Workflow wahrscheinlich wichtiger als kompliziertes Sortieren.
+16. Sortieren
+Hier ist nb nicht Taskwarrior.
+Es hat hervorragendes Filtern, Tags, Suche, Notebooks usw., aber die Todo-Ansicht ist nicht primär als komplexer Task-Scheduler mit:
+sort:due+
+sort:priority-
+
+gedacht.
+nb speichert normale Markdown-Dateien und zeigt sie primär über seinen Index an. Für komplexe Sortierungen nach Priorität/Fälligkeit würde ich nb nicht wie Taskwarrior behandeln. GitHub
+Für dich würde ich daher eher:
+nb todos open
+
+plus Tags:
+nb todos open --tags esp32
+
+verwenden.
+17. Fälligkeitsdatum
+Zum Beispiel:
+nb todo add "Website online stellen" --due "2026-10-12"
+
+Ich würde das Datum immer als ISO schreiben:
+YYYY-MM-DD
+
+also:
+2026-10-12
+
+statt:
+12.10.2026
+
+Damit gibt es praktisch keine Missverständnisse.
+18. Umbenennen
+Der Titel eines Todos steht in der Markdown-Datei.
+Am einfachsten:
+nb edit 4
+
+Dann:
+# [ ] Website fertig machen
+
+ändern zu:
+# [ ] Midnight-Worker Website veröffentlichen
+
+Speichern, fertig.
+Du arbeitest also nicht mit einem starren Datenbankeintrag, sondern letztlich immer mit Markdown.
+19. Ein realistischer Workflow
+Morgens:
+nb todos open
+
+Du bekommst etwa:
+[12] [ ] Website veröffentlichen
+[13] [ ] ESP32 Platine testen
+[14] [ ] CNC Fräser bestellen
+
+Details ansehen:
+nb show 13
+
+Tasks:
+nb tasks 13
+
+Ersten Unterpunkt erledigen:
+nb do 13 1
+
+Komplettes Todo erledigt:
+nb do 13
+
+20. Beispiel für deine Projekte
+Ich würde bei dir beispielsweise folgendes machen:
+nb todo add "ESP32 Handgerät" \
+  --description "Telxon-artiges DMX/IR Handgerät fertigstellen" \
+  --tags esp32,dmx \
+  --task "Gehäuse planen" \
+  --task "Display anschließen" \
+  --task "Rotary Encoder testen" \
+  --task "DMX I2C Slave integrieren" \
+  --task "IR Sender integrieren"
+
+Dann:
+nb tasks
+
+könnte etwa zeigen:
+[21] [ ] ESP32 Handgerät
+------------------------
+[21 1] [ ] Gehäuse planen
+[21 2] [ ] Display anschließen
+[21 3] [ ] Rotary Encoder testen
+[21 4] [ ] DMX I2C Slave integrieren
+[21 5] [ ] IR Sender integrieren
+
+Dann:
+nb do 21 2
+
+und:
+[21 2] [x] Display anschließen
+
+Genau dafür finde ich nb ziemlich elegant.
+Dein nb-Spickzettel
+# TODO ANLEGEN
+nb todo add "Titel"
+
+# MIT DATUM
+nb todo add "Titel" --due "2026-10-12"
+
+# MIT BESCHREIBUNG
+nb todo add "Titel" --description "Längere Beschreibung"
+
+# MIT TAGS
+nb todo add "Titel" --tags esp32,dmx
+
+# MIT UNTERTASKS
+nb todo add "Titel" \
+    --task "Schritt 1" \
+    --task "Schritt 2"
+
+# TODOS ANZEIGEN
+nb todos
+
+# NUR OFFENE
+nb todos open
+
+# NUR ERLEDIGTE
+nb todos closed
+
+# TODO ANSEHEN
+nb show 5
+
+# TODO BEARBEITEN
+nb edit 5
+
+# TODO ERLEDIGEN
+nb do 5
+
+# TODO WIEDER ÖFFNEN
+nb undo 5
+
+# TODO LÖSCHEN
+nb todo delete 5
+
+# TASKS ANZEIGEN
+nb tasks
+nb t
+
+# TASKS EINES TODOS
+nb tasks 5
+
+# TASK 2 VON TODO 5 ERLEDIGEN
+nb do 5 2
+
+# WIEDER ÖFFNEN
+nb undo 5 2
+
+# TAG FILTER
+nb todos --tags esp32
+
+# SUCHEN
+nb search "MAX485"
+
+Mein Vorschlag für dein Setup: nb als Projekt-/Notiz-/Todo-System benutzen und pro großem Vorhaben ein Todo mit Tasks darunter. Taskwarrior würde ich daneben nur dann behalten, wenn du wirklich Terminplanung, Prioritäten und ausgefeilte Sortierung brauchst. nb ist dafür viel angenehmer, wenn du zu einer Aufgabe auch gleich Notizen, Markdown, Links und Projektwissen haben willst.
